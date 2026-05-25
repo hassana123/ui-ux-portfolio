@@ -56,7 +56,11 @@ export default function AboutPage() {
           </div>
 
           <div className="mx-auto mt-12 max-w-[620px] overflow-hidden">
-            <img src="/about.jpg" alt="Barakat holding a flower" className="h-[275px] w-full object-cover object-center" />
+            <img
+              src="/about.jpg"
+              alt="Barakat holding a flower"
+              className="h-[275px] w-full object-cover object-[center_28%]"
+            />
           </div>
 
           <div className="mx-auto mt-10 max-w-[570px]">
