@@ -1,0 +1,140 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+  --portfolio-ink: #05050c;
+  --portfolio-panel: #11101d;
+  --portfolio-violet: #462dff;
+  --portfolio-indigo: #2b1682;
+  --portfolio-cyan: #2cbff2;
+  --portfolio-cyan-bright: #19d9ee;
+  --portfolio-muted: #9693a5;
+}
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.6%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 3.6%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 3.6%;
+  --primary: 280 60% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 96.1%;
+  --secondary-foreground: 0 0% 3.6%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 0 0% 45.1%;
+  --accent: 280 60% 50%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 89.8%;
+  --input: 0 0% 89.8%;
+  --ring: 280 60% 50%;
+  --radius: 0.625rem;
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 0 0% 3.6%;
+  --sidebar-primary: 280 60% 50%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 0 0% 96.1%;
+  --sidebar-accent-foreground: 0 0% 3.6%;
+  --sidebar-border: 0 0% 89.8%;
+  --sidebar-ring: 280 60% 50%;
+}
+
+.dark {
+  --background: 280 20% 12%;
+  --foreground: 0 0% 98%;
+  --card: 280 15% 18%;
+  --card-foreground: 0 0% 98%;
+  --popover: 280 15% 18%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 280 70% 60%;
+  --primary-foreground: 280 20% 12%;
+  --secondary: 280 15% 25%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 280 15% 30%;
+  --muted-foreground: 0 0% 63%;
+  --accent: 280 70% 60%;
+  --accent-foreground: 280 20% 12%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 280 15% 25%;
+  --input: 280 15% 25%;
+  --ring: 280 70% 60%;
+  --sidebar: 280 18% 14%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 280 70% 60%;
+  --sidebar-primary-foreground: 280 20% 12%;
+  --sidebar-accent: 280 15% 30%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 280 15% 25%;
+  --sidebar-ring: 280 70% 60%;
+}
+
+@theme inline {
+  --font-sans: 'Geist', 'Geist Fallback';
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--portfolio-ink);
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
