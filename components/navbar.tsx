@@ -20,7 +20,7 @@ export default function Navbar({ active = 'home' }: NavbarProps) {
     <header className="absolute inset-x-0 top-0 z-50 bg-transparent">
       <nav className="mx-auto flex h-24 max-w-[1210px] items-center justify-between px-5 sm:px-8 lg:px-10">
         <Link href="/" className="flex items-center gap-2 text-[20px] font-bold tracking-wider text-white">
-          <span className="grid size-8 place-items-center rounded-full border border-white/10 bg-white/[0.03] text-white/70">
+          <span className="grid size-8 place-items-center rounded-full border border-white/10 bg-[#1B1A2A] text-white/70">
             <Sparkles className="size-4" strokeWidth={1.6} />
           </span>
           <span className="font-black tracking-widest text-white">EWATECHIE</span>
