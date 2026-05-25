@@ -1,13 +1,7 @@
 import Link from 'next/link'
-import { CircleAlert, Sparkles } from 'lucide-react'
+import { MailCheck, Sparkles } from 'lucide-react'
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ error: string }>
-}) {
-  const params = await searchParams
-
+export default function SignUpSuccessPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#0b0a14] text-white">
       <div className="absolute inset-0 bg-[linear-gradient(135deg,#21117a_0%,#11101b_42%,#05050c_100%)]" />
@@ -22,16 +16,16 @@ export default async function Page({
             <span className="text-[22px] font-extrabold tracking-[0]">EWATECHIE</span>
           </Link>
 
-          <div className="mx-auto mt-10 grid size-16 place-items-center rounded-full bg-red-500/12 text-red-200">
-            <CircleAlert className="size-8" strokeWidth={1.8} />
+          <div className="mx-auto mt-10 grid size-16 place-items-center rounded-full bg-[#2cbff2]/15 text-[#2cbff2]">
+            <MailCheck className="size-8" strokeWidth={1.8} />
           </div>
 
-          <p className="mt-8 text-[13px] font-extrabold uppercase tracking-[0.3em] text-[#2cbff2]">Auth Error</p>
+          <p className="mt-8 text-[13px] font-extrabold uppercase tracking-[0.3em] text-[#2cbff2]">Check Your Email</p>
           <h1 className="mt-4 text-[clamp(2rem,5vw,42px)] font-extrabold leading-none tracking-[0]">
-            Something went wrong.
+            Confirm your account.
           </h1>
-          <p className="mt-5 text-[15px] leading-relaxed text-white/56">
-            {params?.error ? `Code error: ${params.error}` : 'The auth link could not be completed. Please try logging in again.'}
+          <p className="mx-auto mt-5 max-w-[380px] text-[15px] leading-relaxed text-white/56">
+            We sent a confirmation link to your email. Open it to finish signup and enter the portfolio admin area.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -39,13 +33,13 @@ export default async function Page({
               href="/auth/login"
               className="inline-flex h-12 items-center justify-center rounded-lg bg-[linear-gradient(90deg,#956cff_0%,#51c9f6_100%)] px-6 text-sm font-extrabold text-[#05050c]"
             >
-              Try Login
+              Go to Login
             </Link>
             <Link
-              href="/auth/sign-up"
+              href="/"
               className="inline-flex h-12 items-center justify-center rounded-lg border border-white/12 px-6 text-sm font-bold text-white/80 transition hover:border-white/24 hover:text-white"
             >
-              Create Account
+              Back Home
             </Link>
           </div>
         </div>
