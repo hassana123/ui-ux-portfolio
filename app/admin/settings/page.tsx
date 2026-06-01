@@ -13,6 +13,14 @@ const RESUME_BUCKET = 'resumes'
 const MAX_RESUME_SIZE_MB = 20
 const MAX_RESUME_SIZE_BYTES = MAX_RESUME_SIZE_MB * 1024 * 1024
 
+function getSupabaseErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message
+  if (error && typeof error === 'object' && 'message' in error) {
+    return String((error as { message: unknown }).message)
+  }
+  return 'Unexpected Supabase error.'
+}
+
 async function fetchSettings() {
   const { data } = await supabase.from('settings').select('*').limit(1).maybeSingle()
   return data
@@ -48,12 +56,13 @@ export default function SettingsPage() {
     const profileData = {
       name: updates.name ?? formData.name,
       title: updates.title ?? formData.title,
-      bio: updates.bio ?? formData.bio,
       avatar_url: updates.avatar_url ?? formData.avatar_url,
-      experience: updates.experience ?? formData.experience,
-      projects: updates.projects ?? formData.projects,
       resume_url: updates.resume_url ?? formData.resume_url,
     }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     const { data: existingProfile, error: fetchError } = await supabase
       .from('profiles')
@@ -77,7 +86,12 @@ export default function SettingsPage() {
 
     const { data, error } = await supabase
       .from('profiles')
-      .insert([{ id: crypto.randomUUID(), ...profileData }])
+      .insert([{
+        id: crypto.randomUUID(),
+        user_id: user?.id,
+        email: user?.email,
+        ...profileData,
+      }])
       .select()
       .single()
 
@@ -143,16 +157,19 @@ export default function SettingsPage() {
 
       setFormData((current) => ({ ...current, resume_url: publicUrl }))
 
-      const savedProfile = await saveProfile({ resume_url: publicUrl })
+      let savedProfile
+      try {
+        savedProfile = await saveProfile({ resume_url: publicUrl })
+      } catch (profileError) {
+        throw new Error(`Resume uploaded, but profile resume_url was not saved: ${getSupabaseErrorMessage(profileError)}`)
+      }
 
       mutate('admin-profile')
       setFormData((current) => ({ ...current, ...savedProfile }))
       setStatusMessage('Resume uploaded and saved to your profile.')
     } catch (error) {
       setUploadError(
-        error instanceof Error
-          ? error.message
-          : 'Could not upload resume. Check the Supabase Storage policy for the "resumes" bucket.'
+        getSupabaseErrorMessage(error)
       )
     } finally {
       setIsLoading(false)
@@ -196,7 +213,7 @@ export default function SettingsPage() {
       setStatusMessage('Settings saved successfully.')
     } catch (error) {
       console.log('[v0] Error saving settings:', error)
-      setUploadError(error instanceof Error ? error.message : 'Could not save settings.')
+      setUploadError(getSupabaseErrorMessage(error))
     } finally {
       setIsLoading(false)
     }
