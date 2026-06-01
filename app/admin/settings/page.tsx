@@ -9,14 +9,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 
 const supabase = createClient()
+const RESUME_BUCKET = 'resumes'
+const MAX_RESUME_SIZE_MB = 20
+const MAX_RESUME_SIZE_BYTES = MAX_RESUME_SIZE_MB * 1024 * 1024
 
 async function fetchSettings() {
-  const { data } = await supabase.from('settings').select('*').limit(1).single()
+  const { data } = await supabase.from('settings').select('*').limit(1).maybeSingle()
   return data
 }
 
 async function fetchProfile() {
-  const { data } = await supabase.from('profiles').select('*').limit(1).single()
+  const { data } = await supabase.from('profiles').select('*').limit(1).maybeSingle()
   return data
 }
 
@@ -39,6 +42,48 @@ export default function SettingsPage() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
+  const [statusMessage, setStatusMessage] = useState<string | null>(null)
+
+  const saveProfile = async (updates: Partial<typeof formData>) => {
+    const profileData = {
+      name: updates.name ?? formData.name,
+      title: updates.title ?? formData.title,
+      bio: updates.bio ?? formData.bio,
+      avatar_url: updates.avatar_url ?? formData.avatar_url,
+      experience: updates.experience ?? formData.experience,
+      projects: updates.projects ?? formData.projects,
+      resume_url: updates.resume_url ?? formData.resume_url,
+    }
+
+    const { data: existingProfile, error: fetchError } = await supabase
+      .from('profiles')
+      .select('id')
+      .limit(1)
+      .maybeSingle()
+
+    if (fetchError) throw fetchError
+
+    if (existingProfile?.id) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update(profileData)
+        .eq('id', existingProfile.id)
+        .select()
+        .single()
+
+      if (error) throw error
+      return data
+    }
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .insert([{ id: crypto.randomUUID(), ...profileData }])
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  }
 
   useEffect(() => {
     if (settings || profile) {
@@ -64,13 +109,28 @@ export default function SettingsPage() {
     const file = event.target.files?.[0]
     if (!file) return
 
+    if (file.size > MAX_RESUME_SIZE_BYTES) {
+      setUploadError(`Resume must be ${MAX_RESUME_SIZE_MB} MB or smaller.`)
+      event.target.value = ''
+      return
+    }
+
     setIsLoading(true)
     setUploadError(null)
+    setStatusMessage(null)
 
     try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) {
+        throw new Error('You must be logged in before uploading a resume.')
+      }
+
       const extension = file.name.split('.').pop() || 'pdf'
-      const filePath = `resume-${Date.now()}.${extension}`
-      const { error } = await supabase.storage.from('resumes').upload(filePath, file, {
+      const filePath = `${user.id}/resume-${Date.now()}.${extension}`
+      const { error } = await supabase.storage.from(RESUME_BUCKET).upload(filePath, file, {
         cacheControl: '3600',
         upsert: true,
       })
@@ -79,14 +139,20 @@ export default function SettingsPage() {
 
       const {
         data: { publicUrl },
-      } = supabase.storage.from('resumes').getPublicUrl(filePath)
+      } = supabase.storage.from(RESUME_BUCKET).getPublicUrl(filePath)
 
       setFormData((current) => ({ ...current, resume_url: publicUrl }))
+
+      const savedProfile = await saveProfile({ resume_url: publicUrl })
+
+      mutate('admin-profile')
+      setFormData((current) => ({ ...current, ...savedProfile }))
+      setStatusMessage('Resume uploaded and saved to your profile.')
     } catch (error) {
       setUploadError(
         error instanceof Error
           ? error.message
-          : 'Could not upload resume. Make sure a public Supabase Storage bucket named "resumes" exists.'
+          : 'Could not upload resume. Check the Supabase Storage policy for the "resumes" bucket.'
       )
     } finally {
       setIsLoading(false)
@@ -96,52 +162,41 @@ export default function SettingsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setUploadError(null)
+    setStatusMessage(null)
 
     try {
-      if (profile) {
-        await supabase.from('profiles').update({
-          name: formData.name,
-          title: formData.title,
-          bio: formData.bio,
-          avatar_url: formData.avatar_url,
-          experience: formData.experience,
-          projects: formData.projects,
-          resume_url: formData.resume_url,
-        }).eq('id', profile.id)
-      } else {
-        await supabase.from('profiles').insert([{
-          name: formData.name,
-          title: formData.title,
-          bio: formData.bio,
-          avatar_url: formData.avatar_url,
-          experience: formData.experience,
-          projects: formData.projects,
-          resume_url: formData.resume_url,
-        }])
-      }
+      await saveProfile({})
 
       if (settings) {
-        await supabase.from('settings').update({
+        const { error } = await supabase.from('settings').update({
           newsletter_email: formData.newsletter_email,
           social_github: formData.social_github,
           social_twitter: formData.social_twitter,
           social_linkedin: formData.social_linkedin,
           social_instagram: formData.social_instagram,
         }).eq('id', settings.id)
+
+        if (error) throw error
       } else {
-        await supabase.from('settings').insert([{
+        const { error } = await supabase.from('settings').insert([{
+          id: crypto.randomUUID(),
           newsletter_email: formData.newsletter_email,
           social_github: formData.social_github,
           social_twitter: formData.social_twitter,
           social_linkedin: formData.social_linkedin,
           social_instagram: formData.social_instagram,
         }])
+
+        if (error) throw error
       }
 
       mutate('admin-settings')
       mutate('admin-profile')
+      setStatusMessage('Settings saved successfully.')
     } catch (error) {
       console.log('[v0] Error saving settings:', error)
+      setUploadError(error instanceof Error ? error.message : 'Could not save settings.')
     } finally {
       setIsLoading(false)
     }
@@ -228,6 +283,9 @@ export default function SettingsPage() {
             <div className="grid gap-2">
               <Label htmlFor="resume_file">Resume Upload</Label>
               <Input id="resume_file" type="file" accept=".pdf,.doc,.docx" onChange={handleResumeUpload} />
+              <p className="text-sm text-white/52">
+                Upload a PDF, DOC, or DOCX file. Maximum size: {MAX_RESUME_SIZE_MB} MB.
+              </p>
               <Input
                 id="resume_url"
                 value={formData.resume_url}
@@ -235,6 +293,7 @@ export default function SettingsPage() {
                 placeholder="https://example.com/resume.pdf"
               />
               {uploadError && <p className="text-sm text-red-200">{uploadError}</p>}
+              {statusMessage && <p className="text-sm text-[#2cbff2]">{statusMessage}</p>}
               {formData.resume_url && (
                 <a
                   href={formData.resume_url}
