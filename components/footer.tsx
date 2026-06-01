@@ -8,8 +8,13 @@ interface SocialLinks {
   linktree?: string
   medium?: string
   twitter?: string
+  social_twitter?: string
   linkedin?: string
+  social_linkedin?: string
   instagram?: string
+  social_instagram?: string
+  github?: string
+  social_github?: string
 }
 
 interface FooterProps {

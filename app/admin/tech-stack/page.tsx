@@ -5,7 +5,7 @@ import useSWR, { mutate } from 'swr'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trash2, Plus } from 'lucide-react'
+import { Edit2, Trash2, Plus } from 'lucide-react'
 import { TechStackForm } from '@/components/admin/tech-stack-form'
 
 const supabase = createClient()
@@ -21,6 +21,7 @@ async function fetchTechStack() {
 export default function TechStackPage() {
   const { data: items, isLoading } = useSWR('admin-tech-stack', fetchTechStack)
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure?')) return
@@ -53,6 +54,17 @@ export default function TechStackPage() {
         />
       )}
 
+      {editingId && (
+        <TechStackForm
+          initialData={items?.find((item) => item.id === editingId)}
+          onSuccess={() => {
+            setEditingId(null)
+            mutate('admin-tech-stack')
+          }}
+          onCancel={() => setEditingId(null)}
+        />
+      )}
+
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
         {items?.map((item) => (
           <Card key={item.id}>
@@ -63,14 +75,19 @@ export default function TechStackPage() {
                   <p className="text-xs text-muted-foreground mt-1">{item.category}</p>
                 )}
               </div>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8"
-                onClick={() => handleDelete(item.id)}
-              >
-                <Trash2 className="w-4 h-4 text-destructive" />
-              </Button>
+              <div className="flex gap-1">
+                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setEditingId(item.id)}>
+                  <Edit2 className="w-4 h-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={() => handleDelete(item.id)}
+                >
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
             </CardHeader>
           </Card>
         ))}

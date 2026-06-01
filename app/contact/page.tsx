@@ -4,8 +4,29 @@ import Navbar from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { SocialIconRow } from '@/components/social-links'
 import { useState } from 'react'
+import useSWR from 'swr'
+import { createClient } from '@/lib/supabase/client'
+
+const supabase = createClient()
+
+async function fetchContactData() {
+  const [settingsRes, profileRes] = await Promise.all([
+    supabase.from('settings').select('*').limit(1).single(),
+    supabase.from('profiles').select('resume_url').limit(1).single(),
+  ])
+
+  return {
+    settings: settingsRes.data,
+    profile: profileRes.data,
+  }
+}
 
 export default function ContactPage() {
+  const { data } = useSWR('contact-data', fetchContactData, {
+    revalidateOnFocus: false,
+  })
+  const settings = data?.settings
+  const profile = data?.profile
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -27,7 +48,7 @@ export default function ContactPage() {
   return (
     <main className="min-h-screen bg-[#11101b] text-white">
       <section className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_17%_20%,rgba(37,49,94,0.28)_0%,transparent_24%),#11101b]">
-        <Navbar active="contact" />
+        <Navbar active="contact" resumeUrl={profile?.resume_url} />
 
         <div className="mx-auto flex min-h-screen max-w-[1210px] items-center justify-center px-6 pb-20 pt-32 sm:px-10">
           <div className="w-full max-w-[620px]">
@@ -91,14 +112,14 @@ export default function ContactPage() {
             <div className="mt-20 text-center">
               <h2 className="text-[13px] font-medium uppercase tracking-[0.08em] text-white/34">Or Find Me On</h2>
               <nav aria-label="Social links" className="mt-5 flex justify-center">
-                <SocialIconRow />
+                <SocialIconRow links={settings} />
               </nav>
             </div>
           </div>
         </div>
       </section>
 
-      <Footer />
+      <Footer socialLinks={settings} />
     </main>
   )
 }

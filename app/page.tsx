@@ -56,19 +56,23 @@ export default function Home() {
   const projects = data?.projects || []
   const testimonials = data?.testimonials || []
   const articles = data?.articles || []
+  const techStack = data?.techStack || []
   const settings = data?.settings
 
   return (
     <main>
-      <Navbar />
+      <Navbar resumeUrl={profile?.resume_url} />
       <Hero
         name={profile?.name || 'Barakat'}
         title={profile?.title || 'UI/UX Designer'}
         bio={profile?.bio || 'I help businesses and startups turn complex ideas into intuitive, user-friendly products by focusing on clarity, usability, and meaningful user experiences.'}
         avatarUrl={profile?.avatar_url}
+        experience={profile?.experience || '3+ years'}
+        projects={profile?.projects || (projects.length > 0 ? `${projects.length}+` : '28 +')}
+        resumeUrl={profile?.resume_url}
       />
       <Services />
-      <Tools />
+      <Tools techStack={techStack} />
       <Projects projects={projects} />
       {testimonials.length > 0 && <Testimonials testimonials={testimonials} />}
       <About bio={profile?.bio || 'Have a project in mind? Let&apos;s collaborate to create something amazing.'} />

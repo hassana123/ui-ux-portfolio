@@ -19,6 +19,7 @@ export function ProjectForm({ onSuccess, onCancel, initialData }: ProjectFormPro
     description: initialData?.description || '',
     imageUrl: initialData?.image_url || '',
     projectUrl: initialData?.project_url || '',
+    category: initialData?.category || '',
   })
   const [isLoading, setIsLoading] = useState(false)
 
@@ -28,10 +29,18 @@ export function ProjectForm({ onSuccess, onCancel, initialData }: ProjectFormPro
     const supabase = createClient()
 
     try {
+      const data = {
+        title: formData.title,
+        description: formData.description,
+        image_url: formData.imageUrl,
+        project_url: formData.projectUrl,
+        category: formData.category,
+      }
+
       if (initialData) {
-        await supabase.from('projects').update(formData).eq('id', initialData.id)
+        await supabase.from('projects').update(data).eq('id', initialData.id)
       } else {
-        await supabase.from('projects').insert([formData])
+        await supabase.from('projects').insert([data])
       }
       onSuccess()
     } catch (error) {
@@ -76,6 +85,16 @@ export function ProjectForm({ onSuccess, onCancel, initialData }: ProjectFormPro
               value={formData.imageUrl}
               onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
               placeholder="https://example.com/image.jpg"
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="category">Category</Label>
+            <Input
+              id="category"
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              placeholder="Mobile - Fintech"
             />
           </div>
 

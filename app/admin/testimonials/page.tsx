@@ -5,7 +5,7 @@ import useSWR, { mutate } from 'swr'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trash2, Plus } from 'lucide-react'
+import { Edit2, Trash2, Plus } from 'lucide-react'
 import { TestimonialForm } from '@/components/admin/testimonial-form'
 
 const supabase = createClient()
@@ -21,6 +21,7 @@ async function fetchTestimonials() {
 export default function TestimonialsPage() {
   const { data: testimonials, isLoading } = useSWR('admin-testimonials', fetchTestimonials)
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure?')) return
@@ -53,6 +54,17 @@ export default function TestimonialsPage() {
         />
       )}
 
+      {editingId && (
+        <TestimonialForm
+          initialData={testimonials?.find((testimonial) => testimonial.id === editingId)}
+          onSuccess={() => {
+            setEditingId(null)
+            mutate('admin-testimonials')
+          }}
+          onCancel={() => setEditingId(null)}
+        />
+      )}
+
       <div className="grid gap-6">
         {testimonials?.map((testimonial) => (
           <Card key={testimonial.id}>
@@ -66,13 +78,18 @@ export default function TestimonialsPage() {
                   )}
                 </div>
               </div>
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => handleDelete(testimonial.id)}
-              >
-                <Trash2 className="w-4 h-4 text-destructive" />
-              </Button>
+              <div className="flex gap-2">
+                <Button size="icon" variant="ghost" onClick={() => setEditingId(testimonial.id)}>
+                  <Edit2 className="w-4 h-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => handleDelete(testimonial.id)}
+                >
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
             </CardHeader>
           </Card>
         ))}

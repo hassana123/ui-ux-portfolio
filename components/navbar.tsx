@@ -5,9 +5,10 @@ import { Sparkles } from 'lucide-react'
 
 interface NavbarProps {
   active?: 'home' | 'work' | 'about' | 'articles' | 'contact'
+  resumeUrl?: string
 }
 
-export default function Navbar({ active = 'home' }: NavbarProps) {
+export default function Navbar({ active = 'home', resumeUrl }: NavbarProps) {
   const links = [
     { label: 'HOME', href: '/', id: 'home' },
     { label: 'WORK', href: '/#work', id: 'work' },
@@ -47,12 +48,16 @@ export default function Navbar({ active = 'home' }: NavbarProps) {
           ))}
         </ul>
 
-        <Link
-          href="/resume"
-          className="hidden h-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-6 text-sm font-medium text-white/90 backdrop-blur-md transition hover:border-white/20 hover:bg-white/[0.08] md:flex"
-        >
-          My Resume
-        </Link>
+        {resumeUrl && (
+          <a
+            href={resumeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden h-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-6 text-sm font-medium text-white/90 backdrop-blur-md transition hover:border-white/20 hover:bg-white/[0.08] md:flex"
+          >
+            My Resume
+          </a>
+        )}
       </nav>
     </header>
   )

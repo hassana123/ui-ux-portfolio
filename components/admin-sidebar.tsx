@@ -11,6 +11,7 @@ import {
   Code2,
   Settings,
   LogOut,
+  Sparkles,
 } from 'lucide-react'
 
 interface AdminSidebarProps {
@@ -32,38 +33,44 @@ export function AdminSidebar({ onLogout }: AdminSidebarProps) {
   ]
 
   return (
-    <aside className="w-64 bg-card border-r border-border h-screen flex flex-col sticky top-0">
-      <div className="p-6 border-b border-border">
-        <h1 className="text-xl font-bold text-primary">Portfolio Admin</h1>
+    <aside className="sticky top-0 z-40 flex w-full flex-col border-b border-[#24213d] bg-[#0d0c18]/95 backdrop-blur-xl lg:h-screen lg:w-64 lg:border-b-0 lg:border-r">
+      <div className="flex items-center gap-3 border-b border-[#24213d] px-4 py-4 sm:px-6 lg:h-24">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full border border-white/10 bg-[#1b1a2a] text-[#2cbff2]">
+          <Sparkles className="size-5" strokeWidth={1.6} />
+        </span>
+        <div>
+          <h1 className="text-base font-extrabold tracking-[0] text-white">EWATECHIE</h1>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/38">Admin Studio</p>
+        </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto p-4 space-y-2">
+      <nav className="flex gap-2 overflow-x-auto p-3 lg:flex-1 lg:flex-col lg:overflow-y-auto lg:p-4">
         {navItems.map((item) => {
           const Icon = item.icon
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex shrink-0 items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-colors ${
                 isActive(item.href)
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  ? 'bg-[#2cbff2] text-[#05050c]'
+                  : 'text-white/58 hover:bg-white/[0.06] hover:text-white'
               }`}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="size-4" />
               <span>{item.label}</span>
             </Link>
           )
         })}
       </nav>
 
-      <div className="p-4 border-t border-border">
+      <div className="border-t border-[#24213d] p-3 lg:p-4">
         <Button
           onClick={onLogout}
           variant="ghost"
-          className="w-full justify-start text-muted-foreground hover:text-foreground"
+          className="w-full justify-start text-white/58 hover:bg-white/[0.06] hover:text-white"
         >
-          <LogOut className="w-5 h-5 mr-3" />
+          <LogOut className="mr-3 size-5" />
           Logout
         </Button>
       </div>

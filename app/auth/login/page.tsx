@@ -88,10 +88,7 @@ export default function Page() {
             </form>
 
             <p className="mt-6 text-center text-sm text-white/52">
-              Need an account?{' '}
-              <Link href="/auth/sign-up" className="font-bold text-[#2cbff2] hover:text-white">
-                Create one
-              </Link>
+              Access is managed manually from Supabase.
             </p>
           </div>
         </div>

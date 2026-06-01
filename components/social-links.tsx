@@ -1,13 +1,18 @@
 'use client'
 
-import { Instagram, Linkedin } from 'lucide-react'
+import { Github, Instagram, Linkedin } from 'lucide-react'
 
 interface SocialLinks {
   linktree?: string
   medium?: string
   twitter?: string
+  social_twitter?: string
   linkedin?: string
+  social_linkedin?: string
   instagram?: string
+  social_instagram?: string
+  github?: string
+  social_github?: string
 }
 
 interface SocialIconRowProps {
@@ -19,9 +24,10 @@ export function SocialIconRow({ links, className = '' }: SocialIconRowProps) {
   const socials = [
     { label: 'Linktree', href: links?.linktree || '#', icon: LinktreeIcon },
     { label: 'Medium', href: links?.medium || '#', icon: MediumIcon },
-    { label: 'LinkedIn', href: links?.linkedin || '#', icon: Linkedin },
-    { label: 'Instagram', href: links?.instagram || '#', icon: Instagram },
-    { label: 'X', href: links?.twitter || '#', icon: XIcon },
+    { label: 'GitHub', href: links?.github || links?.social_github || '#', icon: Github },
+    { label: 'LinkedIn', href: links?.linkedin || links?.social_linkedin || '#', icon: Linkedin },
+    { label: 'Instagram', href: links?.instagram || links?.social_instagram || '#', icon: Instagram },
+    { label: 'X', href: links?.twitter || links?.social_twitter || '#', icon: XIcon },
   ]
 
   return (
@@ -30,6 +36,8 @@ export function SocialIconRow({ links, className = '' }: SocialIconRowProps) {
         <li key={label}>
           <a
             href={href}
+            target={href === '#' ? undefined : '_blank'}
+            rel={href === '#' ? undefined : 'noopener noreferrer'}
             className="grid size-12 place-items-center rounded-full border border-[#2c2942] bg-[#1a192b] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition hover:border-[#8e87ff] hover:text-[#8e87ff] md:size-9"
             aria-label={label}
           >

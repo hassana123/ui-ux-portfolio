@@ -8,7 +8,9 @@ interface Project {
   title: string
   description?: string
   imageUrl?: string
+  image_url?: string
   projectUrl?: string
+  project_url?: string
   category?: string
   year?: string
 }
@@ -65,18 +67,19 @@ export function Projects({ projects }: ProjectsProps) {
         {/* Two-column featured project grid. */}
         <ul className="mx-auto mt-12 grid max-w-[990px] grid-cols-1 gap-7 md:grid-cols-2">
           {displayedProjects.map((project) => {
-            const projectHref = project.projectUrl || '/work'
+            const projectHref = project.projectUrl || project.project_url || '/work'
             const category = project.category || 'Mobile - Fintech'
             const description = project.description || 'Reimagining a calm, focused banking app.'
+            const image = project.imageUrl || project.image_url
 
             return (
               <li key={project.id}>
                 <article className="group overflow-hidden rounded-[24px] bg-[#171527] shadow-[0_0_0_1px_rgba(255,255,255,0.04)]">
                   {/* Top preview area. Figma shows a pale placeholder when no project image is present. */}
                   <div className="relative h-[220px] overflow-hidden rounded-t-[24px] bg-[#d7d7d7]">
-                    {project.imageUrl && (
+                    {image && (
                       <img
-                        src={project.imageUrl}
+                        src={image}
                         alt={project.title}
                         className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                       />

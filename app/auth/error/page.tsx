@@ -41,12 +41,6 @@ export default async function Page({
             >
               Try Login
             </Link>
-            <Link
-              href="/auth/sign-up"
-              className="inline-flex h-12 items-center justify-center rounded-lg border border-white/12 px-6 text-sm font-bold text-white/80 transition hover:border-white/24 hover:text-white"
-            >
-              Create Account
-            </Link>
           </div>
         </div>
       </section>

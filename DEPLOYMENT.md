@@ -76,6 +76,7 @@ Your Supabase project needs these tables:
 - `avatar_url` (text)
 - `experience` (text)
 - `projects` (text)
+- `resume_url` (text)
 
 ### `projects`
 - `id` (UUID, primary key)
@@ -134,3 +135,4 @@ pnpm start
 - Never commit `.env.local` to version control
 - Environment variables starting with `NEXT_PUBLIC_` are exposed to the browser
 - Keep your Supabase Anon Key safe (though it's designed to be public)
+- Resume uploads use a public Supabase Storage bucket named `resumes`

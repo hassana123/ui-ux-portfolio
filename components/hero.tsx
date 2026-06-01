@@ -10,9 +10,10 @@ interface HeroProps {
   avatarUrl?: string
   experience?: string
   projects?: string
+  resumeUrl?: string
 }
 
-export function Hero({ name, title, bio, avatarUrl, experience = '3+ years', projects = '28 +' }: HeroProps) {
+export function Hero({ name, title, bio, avatarUrl, experience = '3+ years', projects = '28 +', resumeUrl }: HeroProps) {
   return (
     <section className="relative isolate overflow-hidden border-b border-[#23203d] bg-[#05050c] pt-28 text-white">
 
@@ -120,6 +121,17 @@ export function Hero({ name, title, bio, avatarUrl, experience = '3+ years', pro
               Hire Me
               <Mail className="size-5" strokeWidth={1.8} />
             </Link>
+            {resumeUrl && (
+              <a
+                href={resumeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-16 items-center gap-2.5 rounded-lg border border-[#2cbff2]/35 bg-[#2cbff2]/10 px-7 text-base font-semibold text-white/92 transition hover:border-[#2cbff2] hover:bg-[#2cbff2]/16"
+              >
+                View Resume
+                <ArrowUpRight className="size-5" strokeWidth={2.2} />
+              </a>
+            )}
           </div>
 
           {/* Metrics Cards */}

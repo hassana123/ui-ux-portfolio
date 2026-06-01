@@ -7,9 +7,11 @@ interface Article {
   title: string
   content?: string
   featuredImageUrl?: string
+  featured_image_url?: string
   slug?: string
   category?: string
   date?: string
+  created_at?: string
 }
 
 interface ArticlesProps {
@@ -68,8 +70,13 @@ export function Articles({ articles }: ArticlesProps) {
 
         <ul className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {displayedArticles.map((article, index) => {
-            const image = article.featuredImageUrl || fallbackArticles[index]?.featuredImageUrl || '/placeholder.jpg'
+            const image =
+              article.featuredImageUrl ||
+              article.featured_image_url ||
+              fallbackArticles[index]?.featuredImageUrl ||
+              '/placeholder.jpg'
             const href = article.slug ? `/articles/${article.slug}` : '/articles'
+            const date = article.date || (article.created_at ? new Date(article.created_at).toLocaleDateString() : '21 Feb, 2024')
 
             return (
               <li key={article.id}>
@@ -86,7 +93,7 @@ export function Articles({ articles }: ArticlesProps) {
                     <h3 className="mt-3 min-h-[52px] text-[18px] font-extrabold leading-[1.25] tracking-[0] text-white">
                       {article.title}
                     </h3>
-                    <p className="mt-5 text-[11px] text-white/38">{article.date || '21 Feb, 2024'}</p>
+                    <p className="mt-5 text-[11px] text-white/38">{date}</p>
                   </Link>
                 </article>
               </li>

@@ -51,6 +51,17 @@ export default function ProjectsPage() {
         />
       )}
 
+      {editingId && (
+        <ProjectForm
+          initialData={projects?.find((project) => project.id === editingId)}
+          onSuccess={() => {
+            setEditingId(null)
+            mutate('admin-projects')
+          }}
+          onCancel={() => setEditingId(null)}
+        />
+      )}
+
       <div className="grid gap-6">
         {projects?.map((project) => (
           <Card key={project.id}>

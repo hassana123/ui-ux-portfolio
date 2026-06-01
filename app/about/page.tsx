@@ -4,6 +4,22 @@ import Navbar from '@/components/navbar'
 import { About } from '@/components/about'
 import { Footer } from '@/components/footer'
 import { BriefcaseBusiness, CalendarCheck2, Mail, MapPin, Phone, ShieldCheck } from 'lucide-react'
+import useSWR from 'swr'
+import { createClient } from '@/lib/supabase/client'
+
+const supabase = createClient()
+
+async function fetchAboutData() {
+  const [profileRes, settingsRes] = await Promise.all([
+    supabase.from('profiles').select('*').limit(1).single(),
+    supabase.from('settings').select('*').limit(1).single(),
+  ])
+
+  return {
+    profile: profileRes.data,
+    settings: settingsRes.data,
+  }
+}
 
 const skills = ['Product Design', 'UI Systems', 'Prototyping', 'Brand', 'Motion', 'Research']
 
@@ -15,9 +31,24 @@ const experiences = [
 ]
 
 export default function AboutPage() {
+  const { data } = useSWR('about-data', fetchAboutData, {
+    revalidateOnFocus: false,
+  })
+  const profile = data?.profile
+  const settings = data?.settings
+  const name = profile?.name || 'Barakat O. Abdulhakeem'
+  const title = profile?.title || 'UI/UX Designer'
+  const bio =
+    profile?.bio ||
+    'I help early-stage teams turn complex problems into clear, considered interfaces. My work blends product strategy, UI craft, and a quiet sense of motion.'
+  const experience = profile?.experience || '3+ years'
+  const projectCount = profile?.projects || '28 +'
+  const avatarUrl = profile?.avatar_url || '/about.jpg'
+  const contactEmail = settings?.newsletter_email || 'ewatechie001@gmail.com'
+
   return (
     <main className="bg-[#05050c] text-white">
-      <Navbar active="about" />
+      <Navbar active="about" resumeUrl={profile?.resume_url} />
 
       <section className="relative overflow-hidden px-6 pb-24 pt-40 sm:px-10">
         <div className="absolute right-[-32px] top-[180px] hidden h-20 w-28 rounded-[50%] border border-white/15 opacity-50 lg:block before:absolute before:inset-3 before:rounded-[50%] before:border before:border-white/15 after:absolute after:left-9 after:top-[-12px] after:h-12 after:w-20 after:rounded-[50%] after:border after:border-white/15" />
@@ -27,17 +58,16 @@ export default function AboutPage() {
           <div className="mx-auto max-w-[570px]">
             <p className="text-[13px] text-white/40">/About Me</p>
             <h1 className="mt-6 text-[clamp(1.8rem,4vw,34px)] font-extrabold leading-tight tracking-[0]">
-              Hello, I&apos;m <span className="text-[#2cbff2]">Barakat O. Abdulhakeem.</span>
+              Hello, I&apos;m <span className="text-[#2cbff2]">{name}.</span>
             </h1>
-            <p className="mt-3 text-[15px] text-white/52">UI/UX Designer based in Nigeria · 3+ years</p>
+            <p className="mt-3 text-[15px] text-white/52">{title} based in Nigeria · {experience}</p>
             <p className="mt-2 flex items-center gap-2 text-[12px] text-white/55">
               <span className="size-1.5 rounded-full bg-[#2cbff2]" />
               Available for select projects
             </p>
 
             <p className="mt-10 text-[15px] leading-relaxed text-white/48">
-              I help early-stage teams turn complex problems into clear, considered interfaces. My work blends
-              product strategy, UI craft, and a quiet sense of motion.
+              {bio}
             </p>
 
             <div className="mt-8">
@@ -57,8 +87,8 @@ export default function AboutPage() {
 
           <div className="mx-auto mt-12 max-w-[620px] overflow-hidden">
             <img
-              src="/about.jpg"
-              alt="Barakat holding a flower"
+              src={avatarUrl}
+              alt={name}
               className="h-[275px] w-full object-cover object-[center_28%]"
             />
           </div>
@@ -88,7 +118,7 @@ export default function AboutPage() {
                   <BriefcaseBusiness className="size-5" fill="currentColor" strokeWidth={1.8} />
                 </span>
                 <span>
-                  <strong className="block text-xl font-extrabold leading-none">3+ years</strong>
+                  <strong className="block text-xl font-extrabold leading-none">{experience}</strong>
                   <span className="mt-2 block text-sm text-white/48">crafting product experiences</span>
                 </span>
               </div>
@@ -97,7 +127,7 @@ export default function AboutPage() {
                   <CalendarCheck2 className="size-5" fill="currentColor" strokeWidth={1.8} />
                 </span>
                 <span>
-                  <strong className="block text-xl font-extrabold leading-none">28 +</strong>
+                  <strong className="block text-xl font-extrabold leading-none">{projectCount}</strong>
                   <span className="mt-2 block text-sm text-white/48">Projects Done</span>
                 </span>
               </div>
@@ -113,19 +143,19 @@ export default function AboutPage() {
               </blockquote>
             </div>
             <p className="mt-10 text-[18px] font-semibold">Ewatechie</p>
-            <p className="mt-2 text-[13px] text-white/44">UI/UX Designer</p>
+            <p className="mt-2 text-[13px] text-white/44">{title}</p>
           </section>
 
           <section className="mx-auto mt-28 grid max-w-[1070px] grid-cols-1 border border-[#24213d] md:grid-cols-3">
             <ContactCard icon={Phone} label="Phone" value="+234-906-819-5400" href="tel:+2349068195400" />
-            <ContactCard icon={Mail} label="Email" value="ewatechie001@gmail.com" href="mailto:ewatechie001@gmail.com" highlighted />
+            <ContactCard icon={Mail} label="Email" value={contactEmail} href={`mailto:${contactEmail}`} highlighted />
             <ContactCard icon={MapPin} label="Location" value="Kaduna, Nigeria." />
           </section>
         </div>
       </section>
 
-      <About bio="" />
-      <Footer />
+      <About bio={bio} />
+      <Footer socialLinks={settings} />
     </main>
   )
 }

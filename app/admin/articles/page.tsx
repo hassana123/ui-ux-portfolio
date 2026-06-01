@@ -5,7 +5,7 @@ import useSWR, { mutate } from 'swr'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Trash2, Plus } from 'lucide-react'
+import { Edit2, Trash2, Plus } from 'lucide-react'
 import { ArticleForm } from '@/components/admin/article-form'
 
 const supabase = createClient()
@@ -21,6 +21,7 @@ async function fetchArticles() {
 export default function ArticlesPage() {
   const { data: articles, isLoading } = useSWR('admin-articles', fetchArticles)
   const [showForm, setShowForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure?')) return
@@ -53,6 +54,17 @@ export default function ArticlesPage() {
         />
       )}
 
+      {editingId && (
+        <ArticleForm
+          initialData={articles?.find((article) => article.id === editingId)}
+          onSuccess={() => {
+            setEditingId(null)
+            mutate('admin-articles')
+          }}
+          onCancel={() => setEditingId(null)}
+        />
+      )}
+
       <div className="grid gap-6">
         {articles?.map((article) => (
           <Card key={article.id}>
@@ -68,13 +80,18 @@ export default function ArticlesPage() {
                   {new Date(article.created_at).toLocaleDateString()}
                 </p>
               </div>
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() => handleDelete(article.id)}
-              >
-                <Trash2 className="w-4 h-4 text-destructive" />
-              </Button>
+              <div className="flex gap-2">
+                <Button size="icon" variant="ghost" onClick={() => setEditingId(article.id)}>
+                  <Edit2 className="w-4 h-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => handleDelete(article.id)}
+                >
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
             </CardHeader>
           </Card>
         ))}

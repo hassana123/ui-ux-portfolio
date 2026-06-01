@@ -1,5 +1,14 @@
 import { Box, Figma, Framer, Gem, SquareTerminal } from 'lucide-react'
 
+interface TechStackItem {
+  id?: string
+  name?: string
+  label?: string
+  category?: string
+  icon_url?: string
+  iconUrl?: string
+}
+
 // Tool row shown after the services cards.
 const tools = [
   { label: 'Figma', icon: Figma },
@@ -9,7 +18,18 @@ const tools = [
   { label: 'Miro', icon: Box },
 ]
 
-export default function Tools() {
+const fallbackIconMap = [Figma, Framer, Gem, SquareTerminal, Box]
+
+export default function Tools({ techStack = [] }: { techStack?: TechStackItem[] }) {
+  const displayedTools =
+    techStack.length > 0
+      ? techStack.slice(0, 5).map((item, index) => ({
+          label: item.name || item.label || item.category || 'Tool',
+          iconUrl: item.icon_url || item.iconUrl,
+          icon: fallbackIconMap[index % fallbackIconMap.length],
+        }))
+      : tools
+
   return (
     <section className="relative overflow-hidden bg-[#05050c] text-white">
       {/* Shared page rails, matching the hero/services alignment. */}
@@ -22,9 +42,13 @@ export default function Tools() {
           <h2 className="sr-only">Tools and Technologies</h2>
           {/* Tool list wraps from five desktop columns down to two mobile columns. */}
           <ul className="grid grid-cols-2 items-center gap-x-8 gap-y-8 sm:grid-cols-3 lg:grid-cols-5">
-            {tools.map(({ label, icon: Icon }) => (
+            {displayedTools.map(({ label, icon: Icon, iconUrl }) => (
               <li key={label} className="flex items-center justify-center gap-3 text-[#a5a4ab]">
-                <Icon className="size-8 shrink-0" strokeWidth={1.8} />
+                {iconUrl ? (
+                  <img src={iconUrl} alt="" className="size-8 shrink-0 object-contain" />
+                ) : (
+                  <Icon className="size-8 shrink-0" strokeWidth={1.8} />
+                )}
                 <span className="text-[clamp(0.8rem,2vw,22px)] font-extrabold tracking-[0]">{label}</span>
               </li>
             ))}
