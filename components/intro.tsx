@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
 
-const SESSION_KEY = 'et-intro-typing-v2';
 const NAME = 'EwaTechie';
 
 export function Intro({ enabled, copy, asset }: { enabled: boolean; copy: string; asset: string }) {
@@ -10,15 +9,13 @@ export function Intro({ enabled, copy, asset }: { enabled: boolean; copy: string
 
   function dismiss() {
     setShow(false);
-    try { sessionStorage.setItem(SESSION_KEY, '1'); } catch { /* Storage is optional. */ }
   }
 
   useEffect(() => {
     if (!enabled || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    try { if (sessionStorage.getItem(SESSION_KEY)) return; } catch { /* Continue without persistence. */ }
     setTyped('');
     setShow(true);
-    // Only completed intros consume the session flag; Strict Mode can safely restart this effect.
+    // Replay on each homepage mount, including refresh. Cleanup supports Strict Mode restarts.
     const letters = Array.from(NAME, (_, index) =>
       setTimeout(() => setTyped(NAME.slice(0, index + 1)), 650 + index * 140)
     );
