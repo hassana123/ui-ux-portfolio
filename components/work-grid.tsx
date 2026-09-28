@@ -1,0 +1,7 @@
+'use client';
+import Link from 'next/link';
+import {useState} from 'react';
+import type { Content } from '@/lib/schema';
+import {ProjectVisual} from './project-visual';
+const names:Record<string,string>={product:'UI/UX & Product',motion:'Motion',illustration:'Illustration',general:'General'};
+export function WorkGrid({items,base='work',filters=false}:{items:Content[],base?:string,filters?:boolean}){const [active,setActive]=useState('all');const categories=[...new Set(items.map(i=>i.discipline))];return <>{filters&&categories.length>0&&<div className="filters" aria-label="Filter projects"><button aria-pressed={active==='all'} onClick={()=>setActive('all')}>All work</button>{categories.map(d=><button key={d} aria-pressed={active===d} onClick={()=>setActive(d)}>{names[d]}</button>)}</div>}<div className={`work-grid ${base==='playground'?'play-grid':''}`}>{items.filter(i=>active==='all'||i.discipline===active).map((item,index)=><Link href={`/${base}/${item.slug}`} className="project-card" key={item.id}><ProjectVisual item={item}/><div className="project-caption"><div><span className="eyebrow">{item.category}{item.sample?' · SAMPLE':''}</span><h3>{item.title}<span className="project-number">0{index+1}</span></h3><p>{item.summary}</p></div><span className="round-arrow">↗</span></div></Link>)}</div>{!items.length&&<div className="empty-state"><span>✳</span><h3>A little space for what’s next.</h3><p>New work will appear here when it’s ready.</p></div>}</>;}

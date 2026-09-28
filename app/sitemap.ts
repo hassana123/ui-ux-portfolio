@@ -1,0 +1,2 @@
+import {getContent} from '@/lib/data';
+export default async function sitemap(){const base=process.env.NEXT_PUBLIC_SITE_URL||'http://localhost:3000';const collections=await Promise.all(['projects','playground_items','articles'].map(k=>getContent(k as 'projects'|'playground_items'|'articles')));return [{url:base},...collections.flatMap((items,i)=>items.length?[{url:`${base}/${['work','playground','blog'][i]}`},...items.filter(x=>!x.externalUrl).map(x=>({url:`${base}/${['work','playground','blog'][i]}/${x.slug}`}))]:[])];}

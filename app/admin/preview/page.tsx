@@ -1,0 +1,9 @@
+import {redirect,notFound} from 'next/navigation';
+import {owner} from '@/lib/supabase';
+import {getPreview,type Collection} from '@/lib/data';
+import {settingsSchema} from '@/lib/schema';
+import {defaults} from '@/lib/defaults';
+import {Detail} from '@/components/detail';
+import type {CSSProperties} from 'react';
+export const dynamic='force-dynamic';
+export default async function Preview({searchParams}:{searchParams:Promise<{kind?:string,id?:string}>}){const auth=await owner();if(!auth)redirect('/admin/login');const p=await searchParams;if(p.kind==='settings'){const {data}=await auth.db.from('settings_revisions').select('data').eq('state','draft').maybeSingle();const parsed=settingsSchema.safeParse(data?.data);const s=parsed.success?parsed.data:defaults;return <main id="main" className="draft-preview" style={Object.fromEntries(Object.entries(s.theme).map(([k,v])=>[`--${k}`,v])) as CSSProperties}><div className="sample-banner">Private settings draft · not published</div><section className="wrap archive"><span className="name-label">{s.label}</span><h1>{s.hero}</h1><p>{s.positioning} · {s.supporting}</p><img src={s.portrait||s.introAsset} alt={s.portraitAlt||'Brand character'} width="208" height="260"/>{s.sections.filter(x=>x.visible).sort((a,b)=>a.order-b.order).map(x=><section className="case-block" key={x.id}><span className="eyebrow">{x.kind}</span><h2>{x.kind==='about'?s.aboutTitle:x.kind==='contact'?s.contactTitle:x.title}</h2><p className="prose-text">{x.kind==='about'?s.about:x.kind==='playground'?s.playgroundIntro:x.text}</p></section>)}<p>{s.footer}</p></section></main>;}if(!['projects','playground_items','articles'].includes(p.kind||'')||!p.id)notFound();const item=await getPreview(p.kind as Collection,p.id);if(!item)notFound();return <><div className="sample-banner">Private draft preview · not published</div><Detail item={item} base={p.kind==='projects'?'work':p.kind==='articles'?'blog':'playground'}/></>;}

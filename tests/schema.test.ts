@@ -1,0 +1,8 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {defaults} from '../lib/defaults';
+import {settingsSchema,contentSchema,contactSchema,eligible,safeUrl} from '../lib/schema';
+test('discipline controls reject no active focus and a disabled primary',()=>{assert.equal(settingsSchema.safeParse({...defaults,disciplines:[]}).success,false);assert.equal(settingsSchema.safeParse({...defaults,disciplines:['motion']}).success,false);assert.equal(settingsSchema.safeParse({...defaults,disciplines:['motion'],primary:'motion'}).success,true);});
+test('disabled disciplines are ineligible while general content remains visible',()=>{const s={...defaults,disciplines:['product'] as typeof defaults.disciplines};assert.equal(eligible('motion',s),false);assert.equal(eligible('general',s),true);});
+test('contact validation rejects spam and invalid messages',()=>{const good={name:'Barakat',email:'test@example.com',message:'A real project enquiry with enough detail.'};assert.equal(contactSchema.safeParse(good).success,true);assert.equal(contactSchema.safeParse({...good,website:'spam'}).success,false);assert.equal(contactSchema.safeParse({...good,email:'bad'}).success,false);});
+test('unsafe URLs and untrusted Figma embeds are rejected',()=>{for(const url of ['javascript:alert(1)','//evil.test','data:text/html,bad'])assert.equal(safeUrl.safeParse(url).success,false);assert.equal(contentSchema.safeParse({title:'Project',slug:'project',blocks:[{id:'1',type:'figma',url:'https://evil.test/'}]}).success,false);assert.equal(safeUrl.safeParse('/api/media/123').success,true);});

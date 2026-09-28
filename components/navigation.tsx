@@ -1,0 +1,5 @@
+'use client';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect,useState } from 'react';
+export function Navigation({links,brand}:{links:{label:string,href:string}[],brand:string}){const [open,setOpen]=useState(false);const path=usePathname();useEffect(()=>{setOpen(false);},[path]);return <header className="site-header"><Link className="monogram" href="/" aria-label={`${brand} home`}>ET<span>.</span></Link><nav aria-label="Main navigation" className={open?'nav-links is-open':'nav-links'} id="main-navigation" onKeyDown={e=>{if(e.key==='Escape'){setOpen(false);document.getElementById('menu-toggle')?.focus();}}}>{links.map(l=><Link key={l.href} href={l.href} onClick={()=>setOpen(false)}>{l.label}</Link>)}</nav><a className="header-cta" href="/#contact">Let’s work together <span>↗</span></a><button id="menu-toggle" className="menu-toggle" aria-expanded={open} aria-controls="main-navigation" onClick={()=>setOpen(!open)}>{open?'Close ✕':'Menu ☰'}</button></header>;}
