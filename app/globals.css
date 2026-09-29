@@ -2540,3 +2540,14 @@ figcaption {
 }
 .google-login-button{width:100%;background:var(--card);border:1px solid var(--rule);gap:14px}.google-login-button>span{font-weight:700;font-size:20px}.login-divider{display:flex;align-items:center;gap:12px;margin:24px 0;font-size:11px;color:var(--muted)}.login-divider:before,.login-divider:after{content:"";height:1px;flex:1;background:var(--rule)}.google-login>p{font-size:12px;color:var(--deep);margin-top:12px}
 .toast-stack{position:fixed;right:24px;top:24px;z-index:150;display:grid;gap:12px;width:min(420px,calc(100vw - 32px));pointer-events:none}.toast{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1px solid var(--rule);border-left:4px solid #42683b;border-radius:9px;padding:18px;box-shadow:0 8px 35px #24211e20;pointer-events:auto}.toast-error{border-left-color:var(--deep)}.toast>span{font-size:20px;font-weight:700}.toast strong{font-size:13px}.toast p{font-size:12px;margin-top:5px;line-height:1.6}.toast button{background:none;border:0;font-size:24px;line-height:1;padding:0 4px;margin-left:auto}.toast-stack button:focus-visible{outline:2px solid var(--deep)}@media(max-width:600px){.toast-stack{right:16px;top:16px}}
+
+/* Manual login: accessible visibility control inside the password field. */
+.login-panel .password-login-form>label{display:block;margin:18px 0 8px;font-size:12px;font-weight:600}
+.password-login-form>input,.login-password-field>input{width:100%;min-height:48px;padding:12px 14px;border:1px solid var(--rule);border-radius:8px;background:var(--card);font-size:14px}
+.login-password-field{position:relative}
+.login-password-field>input{padding-right:54px}
+.password-visibility-toggle{position:absolute;right:3px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:6px;background:transparent;color:var(--muted)}
+.password-visibility-toggle:hover{color:var(--ink);background:var(--surface)}
+.password-visibility-toggle:focus-visible{outline:2px solid var(--deep);outline-offset:-3px}
+.login-panel .password-login-form>.button{width:100%;margin-top:24px}
+
