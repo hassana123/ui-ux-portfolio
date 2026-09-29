@@ -1,3 +1,4 @@
+import { ToastProvider } from "@/components/toasts";
 import type { Metadata } from 'next';
 import '@fontsource/manrope/400.css';
 import '@fontsource/manrope/500.css';
@@ -14,5 +15,5 @@ export const metadata:Metadata={metadataBase:new URL(process.env.NEXT_PUBLIC_SIT
 export default function RootLayout({children}:{children:React.ReactNode}){
   // Extensions may inject body attributes such as cz-shortcut-listen before hydration.
   // Child hydration checks remain enabled.
-  return <html lang="en" data-scroll-behavior="smooth"><body suppressHydrationWarning><a className="skip-link" href="#main">Skip to content</a>{children}</body></html>;
+  return <html lang="en" data-scroll-behavior="smooth"><body suppressHydrationWarning><a className="skip-link" href="#main">Skip to content</a><ToastProvider>{children}</ToastProvider></body></html>;
 }
