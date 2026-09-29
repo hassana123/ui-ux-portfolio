@@ -1,9 +1,10 @@
 import 'server-only';
 import { cache } from 'react';
 import { publicDatabase, configured, owner } from './supabase';
-import { defaults,sampleProjects,samplePlayground,sampleArticles } from './defaults';
+import { defaults } from './defaults';
+import { contentWithFallback, type Collection } from './content-fallback';
 import { contentSchema,settingsSchema,eligible,type Content } from './schema';
-export type Collection='projects'|'playground_items'|'articles';
+export type { Collection } from './content-fallback';
 export const demo=()=>!configured()&&(process.env.NEXT_PUBLIC_DEMO_MODE==='true'||process.env.NODE_ENV==='development');
 const loadSettings=cache(async()=>{
  try {
@@ -26,10 +27,11 @@ export const getContent=cache(async(kind:Collection):Promise<Content[]>=>{
  if(!available)return [];
  try {
   const db=publicDatabase();
-  if(!db)return(demo()?{projects:sampleProjects,playground_items:samplePlayground,articles:sampleArticles}[kind]:[]).filter(c=>eligible(c.discipline,settings));
+  if(!db)return contentWithFallback(kind,[],settings);
   const {data,error}=await db.from(kind+'_revisions').select('resource_id,data').eq('state','published');
   if(error){console.error(`[portfolio] ${kind} query failed; verify the database migration.`,error.code);return [];}
-  return(data||[]).flatMap(row=>{const p=contentSchema.safeParse(row.data);return p.success&&eligible(p.data.discipline,settings)?[{id:row.resource_id,...p.data}]:[];}).sort((a,b)=>a.order-b.order);
+  const published=(data||[]).flatMap(row=>{const p=contentSchema.safeParse(row.data);return p.success&&eligible(p.data.discipline,settings)?[{id:row.resource_id,...p.data}]:[];});
+  return contentWithFallback(kind,published,settings);
  } catch {
   console.error(`[portfolio] ${kind} is temporarily unavailable.`);
   return [];

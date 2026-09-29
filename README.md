@@ -1,5 +1,7 @@
 # EwaTechie portfolio
 
+Empty published collections now show labelled bundled sample content, including when Supabase is connected. Each collection switches to its real content as soon as eligible items are published. Section visibility and discipline switches still apply. Database errors remain distinct from empty collections; failures do not expose drafts. This fallback supersedes the original demo-only behavior described below.
+
 A warm editorial Next.js App Router / TypeScript portfolio with Tailwind, local Manrope and Lora fonts, Supabase owner authentication, private media and independent draft/published revisions.
 
 ## Run locally
